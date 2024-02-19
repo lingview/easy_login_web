@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录</title>
+    <style>
+        #response-message {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ccd7d8;
+            padding: 10px;
+            border: 1px solid #dadb96;
+            border-radius: 5px;
+        }
+
+
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        input[type="text"], input[type="password"] {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 150px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #66ccff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+        }
+
+        .nav-item.active {
+            color: #00a0e9;
+        }
+
+        .nav-item img {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+        }
+
+        .button {
+            background-color: #7c7d80;
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            margin: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            border-radius: 15px;
+        }
+
+
+        .center-container {
+            text-align: center;
+            margin-top: 10%;
+            background-color: #cecdcd; /* 设置背景颜色 */
+            padding: 50px;
+            margin-left: 20%; /* 设置左边距 */
+            margin-right: 20%;
+        }
+    </style>
+</head>
+<body>
+    <script>
+
+        var user_login_information
+        var user_login
+        var zhanghao
+        var mimas
+        document.addEventListener("DOMContentLoaded", function() {
+            var cunchumima = localStorage.getItem("mima");
+            var cunchuzhanghao = localStorage.getItem("zhanghao");
+            var changdu
+            changdu = cunchumima.length
+            if (changdu>=5) {
+                tongguo = cunchuzhanghao+','+cunchumima
+                window.location.replace("../../web.html");
+            }else{
+                console.log('登录去吧你！！！')
+            }
+        });
+
+
+
+
+        function username() {
+            localStorage.removeItem("mima");
+            localStorage.removeItem("zhanghao");
+            localStorage.removeItem("responseMessage"); 
+            var text = document.getElementById("text-input").value;
+            var password = document.getElementById("text-input-password").value;
+            zhanghao = text
+            mima = password
+            text = text+","+password
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://192.168.1.6:3920/denglu", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    user_login_information=xhr.responseText;
+
+                    function decodeUnicode(str) {
+                    return str.replace(/\\u[\dA-F]{4}/gi, function(match) {
+                        return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
+                        console.log("123");
+                    });
+                    }
+                    user_login = decodeUnicode(user_login_information);
+                    if(user_login_information=="登录失败"){
+                        console.log("请检查用户名密码")
+                        document.getElementById("denglushibai").textContent = "登录失败，请检查用户名及密码！";
+                    }
+                    user_login =JSON.parse(user_login);
+                    user_login = user_login.message;
+                    console.log(user_login);
+                    localStorage.setItem("zhanghao", zhanghao);
+                    localStorage.setItem("mima", mima);
+                    var user_status = localStorage.getItem('user_status');
+                    console.log(user_status);
+                    window.location.assign(user_status);
+                }
+            };
+            xhr.send("text=" + text);
+        }
+
+    </script>
+
+
+    <div class="center-container">
+        <center>
+            <td><label>用户名:</label></td>
+            <td><input type="text" name="username" id="text-input" placeholder="请输入3-10位用户名"></td>
+            <br/>
+            <td><label>密码:</label></td>
+            <td><input type="password" id="text-input-password" placeholder="请输入5-20位密码"></td>
+            <br/>
+            <button onclick="username();">登录</button>
+            <button onclick="window.location.href='signup.html'">注册</button>
+            <p id="denglushibai"></p>
+        </center>
+    </div>
+
+
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册</title>
+    <style>
+        #response-message {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ccd7d8;
+            padding: 10px;
+            border: 1px solid #dadb96;
+            border-radius: 5px;
+        }
+
+
+
+
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        input[type="text"], input[type="password"] {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 150px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #66CCFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+        }
+
+        .nav-item.active {
+            color: #00a0e9;
+        }
+
+        .nav-item img {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+        }
+        .button {
+            background-color: #7c7d80;
+            color: #66ccff;
+            padding: 10px 20px;
+            border: none;
+            margin: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            border-radius: 15px;
+        }
+
+
+        .center-container {
+            text-align: center;
+            margin-top: 10%;
+            background-color: #cecdcd; /* 设置背景颜色 */
+            padding: 50px;
+            margin-left: 20%; /* 设置左边距 */
+            margin-right: 20%;
+        }
+    </style>
+</head>
+<body>
+    <div class="center-container ">
+        <center>
+            <td><label>用户名:</label></td>
+            <td><input type="text" name="username" id="text-input" placeholder="请输入3-10位用户名"></td>
+            <br/>
+            <td><label>密码:</label></td>
+            <td><input type="password" id="text-input-password" placeholder="请输入5-20位密码"></td>
+            <br/>
+            <button onclick="sendText(event);">确定</button>
+            <button onclick="window.location.href='login.html'">去登录</button>
+            <br/>
+        </center>
+    </div>
+
+    <div id="response-message"></div>
+    <script>    
+
+
+        // 检查是否有存储的消息，并在页面加载时显示
+        window.onload = function() {
+            var storedMessage = localStorage.getItem("responseMessage");
+            if (storedMessage) {
+                var responseMessage = document.getElementById("response-message");
+                responseMessage.innerText = storedMessage;
+                localStorage.removeItem("responseMessage"); // 清除存储的消息
+            }
+        }
+
+        function sendText(event) {
+            event.preventDefault();
+            var text = document.getElementById("text-input").value;
+            var password = document.getElementById("text-input-password").value;
+            text = text + "," + password;
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://192.168.1.6:3920/send-text", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log(xhr.responseText);
+                    var response = JSON.parse(xhr.responseText);
+                    var responseMessage = document.getElementById("response-message");
+                    responseMessage.innerText = response.message;
+                    
+                    // 存储消息到localStorage
+                    localStorage.setItem("responseMessage", response.message);
+                }
+            };
+            xhr.send("text=" + text);
+        }
+    </script>
+</body>
+</html>
