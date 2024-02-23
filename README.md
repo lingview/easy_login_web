@@ -157,7 +157,7 @@ nohup pypy3 -m gunicorn -w 4 -t 30 -b 0.0.0.0:3920 --certfile=/var/www/html/ling
       var user_name = localStorage.getItem("zhanghao");
       var user_password = localStorage.getItem("mima");
       const data = { 'username': user_name, 'password': user_password }; 
-      fetch('https://ling2023.xyz:3920/verify', {
+      fetch('http://192.168.1.6:3920/verify', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'
